@@ -72,8 +72,12 @@ public class MRender implements Renderer {
 	public void onDrawFrame(GL10 gl) {
 		// Ignore the passed-in GL10 interface, and use the GLES20
 		// class's static methods instead.
-		GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+		
+		// GLES20.glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+		GameLibJNIWrapper.on_draw_frame();
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+
+		Log.i(TAG, "Call On New Frame.");
 		GLES20.glUseProgram(mProgram);
 		// checkGlError("glUseProgram");
 
@@ -100,10 +104,14 @@ public class MRender implements Renderer {
 		Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);
 		Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mMVPMatrix, 0);
 
-		GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+		GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix, 0);		
+		
+		/* Two viewports */
+		GameLibJNIWrapper.draw_two_eye(this, screenheight, screenwidth);
+
+		// GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
 		// checkGlError("glDrawArrays");
-		GLES20.glViewport(0, 0, screenwidth, screenheight / 2);
+		// GLES20.glViewport(0, 0, screenwidth, screenheight / 2);
 
 		// Matrix.setRotateM(mMMatrix, 0, angle, 0, 0, 1.0f);
 		// Matrix.multiplyMM(mMVPMatrix, 0, mVMatrix, 0, mMMatrix, 0);
@@ -111,9 +119,15 @@ public class MRender implements Renderer {
 
 		// GLES20.glUniformMatrix4fv(muMVPMatrixHandle, 1, false, mMVPMatrix,
 		// 0);
-		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
-		GLES20.glViewport(0, screenheight / 2, screenwidth, screenheight / 2);
+		
+		// GameLibJNIWrapper.draw_two_eye(screenheight, screenwidth);
+		// GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+		// GLES20.glViewport(0, screenheight / 2, screenwidth, screenheight / 2);
 
+	}
+
+	private void onNewFrame() {
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
 	}
 
 	@Override
